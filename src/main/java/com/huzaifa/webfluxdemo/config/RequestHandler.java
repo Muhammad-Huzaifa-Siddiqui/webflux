@@ -2,6 +2,8 @@ package com.huzaifa.webfluxdemo.config;
 
 import com.huzaifa.webfluxdemo.dto.MultiplyRequestDto;
 import com.huzaifa.webfluxdemo.dto.ResponseDto;
+import com.huzaifa.webfluxdemo.dto.model.InputFailureValidationResponse;
+import com.huzaifa.webfluxdemo.exception.InputValidationException;
 import com.huzaifa.webfluxdemo.service.ReactiveMathService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,9 @@ public class RequestHandler {
     }
     public Mono<ServerResponse> squareHandler(ServerRequest serverRequest){
         int input = Integer.parseInt(serverRequest.pathVariable("input"));
+        if(input<10 || input > 20){
+            return Mono.error(new InputValidationException(input));
+        }
         Mono<ResponseDto> responseMono = mathService.findSquare(input);
         return ServerResponse.ok().body(responseMono, ResponseDto.class);
     }
